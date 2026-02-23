@@ -1,11 +1,11 @@
 <!-- ================= HERO SECTION ================= -->
 
 <h1 align="center">
-  <img src="https://readme-typing-svg.herokuapp.com?font=Fira+Code&size=34&duration=3000&pause=1000&color=00C896&center=true&vCenter=true&width=700&lines=Hi%2C+I'm+Vishu+Sharma;Full+Stack+Developer;Building+Scalable+Web+Applications;AI+Focused+Engineer" />
+  <img src="https://readme-typing-svg.herokuapp.com?font=Fira+Code&size=34&duration=3000&pause=1000&color=00C896&center=true&vCenter=true&width=750&lines=Hi%2C+I'm+Vishu+Sharma;Full+Stack+Developer;Building+Scalable+Web+Applications;AI+Focused+Engineer" />
 </h1>
 
 <p align="center">
-  <b>Software Engineer crafting high-performance web systems with clean architecture.</b>
+  <b>Engineer focused on scalable systems, performance, and clean architecture.</b>
 </p>
 
 ---
@@ -14,11 +14,15 @@
 
 ## 👨‍💻 About Me
 
-- 🚀 Full Stack Developer with strong backend fundamentals  
-- 🧠 Passionate about scalable system design & performance  
-- 🔍 Focused on building production-ready applications  
-- 🤖 Exploring AI integrations in modern web apps  
-- 📈 Always optimizing for clean code & maintainability  
+I build systems — not just websites.
+
+Focused on writing scalable backend architecture and intuitive frontend experiences.  
+I enjoy transforming complex problems into structured, production-ready solutions.
+
+- 🚀 Strong backend fundamentals  
+- 🧠 System design & performance focused  
+- 🤖 Exploring AI integrations  
+- 📈 Clean, maintainable, real-world engineering  
 
 <br clear="right"/>
 
@@ -49,32 +53,32 @@
 ### 🔥 AI Resume Analyzer
 
 <p align="center">
-<a href="YOUR_RESUME_LIVE_LINK">
-  <img src="https://img.shields.io/badge/Live-Demo-00C896?style=for-the-badge&logo=vercel&logoColor=white" />
+<a href="#">
+  <img src="https://img.shields.io/badge/Live-Demo-Coming%20Soon-FF8C00?style=for-the-badge&logo=vercel&logoColor=white" />
 </a>
 &nbsp;
 <a href="YOUR_RESUME_GITHUB_LINK">
-  <img src="https://img.shields.io/badge/GitHub-Repo-111111?style=for-the-badge&logo=github&logoColor=white" />
+  <img src="https://img.shields.io/badge/View-Code-111111?style=for-the-badge&logo=github&logoColor=white" />
 </a>
 </p>
 
-AI-powered resume analysis tool with intelligent scoring and structured feedback.
+AI-powered resume analysis system with intelligent scoring and structured feedback.
 
 ---
 
 ### 💰 Smart Expense Tracker
 
 <p align="center">
-<a href="YOUR_EXPENSE_LIVE_LINK">
-  <img src="https://img.shields.io/badge/Live-Demo-00C896?style=for-the-badge&logo=vercel&logoColor=white" />
+<a href="#">
+  <img src="https://img.shields.io/badge/Live-Demo-Coming%20Soon-FF8C00?style=for-the-badge&logo=vercel&logoColor=white" />
 </a>
 &nbsp;
 <a href="YOUR_EXPENSE_GITHUB_LINK">
-  <img src="https://img.shields.io/badge/GitHub-Repo-111111?style=for-the-badge&logo=github&logoColor=white" />
+  <img src="https://img.shields.io/badge/View-Code-111111?style=for-the-badge&logo=github&logoColor=white" />
 </a>
 </p>
 
-Interactive expense tracking dashboard with analytics and clean UI.
+Interactive expense tracking dashboard with analytics and structured architecture.
 
 ---
 
@@ -95,7 +99,7 @@ Interactive expense tracking dashboard with analytics and clean UI.
 
 ---
 
-## 🌐 Connect With Me
+## 🌐 Connect
 
 <p align="center">
 <a href="https://www.linkedin.com/in/vishu-sharma-293a0432a/">
