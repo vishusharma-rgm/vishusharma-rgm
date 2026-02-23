@@ -1,11 +1,11 @@
 <!-- ================= HERO SECTION ================= -->
 
 <h1 align="center">
-  <img src="https://readme-typing-svg.herokuapp.com?font=Fira+Code&size=34&duration=3000&pause=1000&color=00C896&center=true&vCenter=true&width=750&lines=Hi%2C+I'm+Vishu+Sharma;Full+Stack+Developer;Building+Scalable+Web+Applications;AI+Focused+Engineer" />
+  <img src="https://readme-typing-svg.herokuapp.com?font=Fira+Code&size=34&duration=3000&pause=1000&color=00C896&center=true&vCenter=true&width=750&lines=Hi%2C+I'm+Vishu+Sharma;Full+Stack+Developer;System+Focused+Engineer;Building+Real-World+Products" />
 </h1>
 
 <p align="center">
-  <b>Engineer focused on scalable systems, performance, and clean architecture.</b>
+  <b>I design systems that scale, not just interfaces that look good.</b>
 </p>
 
 ---
@@ -14,15 +14,15 @@
 
 ## 👨‍💻 About Me
 
-I build systems — not just websites.
+I enjoy solving problems that require structure, logic, and performance thinking.
 
-Focused on writing scalable backend architecture and intuitive frontend experiences.  
-I enjoy transforming complex problems into structured, production-ready solutions.
+My focus is simple:
+- Write backend code that survives scale  
+- Build frontend interfaces that feel fast and intuitive  
+- Keep architecture clean and maintainable  
+- Continuously improve system design fundamentals  
 
-- 🚀 Strong backend fundamentals  
-- 🧠 System design & performance focused  
-- 🤖 Exploring AI integrations  
-- 📈 Clean, maintainable, real-world engineering  
+I care more about *engineering depth* than surface-level features.
 
 <br clear="right"/>
 
@@ -54,15 +54,15 @@ I enjoy transforming complex problems into structured, production-ready solution
 
 <p align="center">
 <a href="#">
-  <img src="https://img.shields.io/badge/Live-Demo-Coming%20Soon-FF8C00?style=for-the-badge&logo=vercel&logoColor=white" />
+  <img src="https://img.shields.io/badge/Live-Demo%20Soon-orange?style=for-the-badge&logo=vercel&logoColor=white" />
 </a>
 &nbsp;
 <a href="YOUR_RESUME_GITHUB_LINK">
-  <img src="https://img.shields.io/badge/View-Code-111111?style=for-the-badge&logo=github&logoColor=white" />
+  <img src="https://img.shields.io/badge/View-Code-black?style=for-the-badge&logo=github&logoColor=white" />
 </a>
 </p>
 
-AI-powered resume analysis system with intelligent scoring and structured feedback.
+AI-powered resume analysis engine with structured scoring and feedback system.
 
 ---
 
@@ -70,15 +70,15 @@ AI-powered resume analysis system with intelligent scoring and structured feedba
 
 <p align="center">
 <a href="#">
-  <img src="https://img.shields.io/badge/Live-Demo-Coming%20Soon-FF8C00?style=for-the-badge&logo=vercel&logoColor=white" />
+  <img src="https://img.shields.io/badge/Live-Demo%20Soon-orange?style=for-the-badge&logo=vercel&logoColor=white" />
 </a>
 &nbsp;
 <a href="YOUR_EXPENSE_GITHUB_LINK">
-  <img src="https://img.shields.io/badge/View-Code-111111?style=for-the-badge&logo=github&logoColor=white" />
+  <img src="https://img.shields.io/badge/View-Code-black?style=for-the-badge&logo=github&logoColor=white" />
 </a>
 </p>
 
-Interactive expense tracking dashboard with analytics and structured architecture.
+Expense tracking system with analytics and scalable architecture.
 
 ---
 
@@ -107,6 +107,6 @@ Interactive expense tracking dashboard with analytics and structured architectur
 </a>
 &nbsp;
 <a href="mailto:vishu09sharma@icloud.com">
-  <img src="https://img.shields.io/badge/Email-111111?style=for-the-badge&logo=gmail&logoColor=white"/>
+  <img src="https://img.shields.io/badge/Email-black?style=for-the-badge&logo=gmail&logoColor=white"/>
 </a>
 </p>
