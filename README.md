@@ -1,16 +1,30 @@
-<!-- ================= PREMIUM DEVELOPER PROFILE ================= -->
+<!-- ================= HERO SECTION ================= -->
 
 <h1 align="center">
-  <img src="https://readme-typing-svg.herokuapp.com?font=Fira+Code&size=32&duration=3000&pause=1000&color=2F855A&center=true&vCenter=true&width=600&lines=Hi%2C+I'm+Vishu+Sharma;Full+Stack+Developer;AI+Systems+Builder" />
+  <img src="https://readme-typing-svg.herokuapp.com?font=Fira+Code&size=34&duration=3000&pause=1000&color=00C896&center=true&vCenter=true&width=700&lines=Hi%2C+I'm+Vishu+Sharma;Full+Stack+Developer;Building+Scalable+Web+Applications;AI+Focused+Engineer" />
 </h1>
 
 <p align="center">
-  Building scalable web applications with clean architecture and strong backend fundamentals.
+  <b>Software Engineer crafting high-performance web systems with clean architecture.</b>
 </p>
 
 ---
 
-## 🚀 Tech Stack
+<img align="right" alt="coding" width="380" src="https://media.giphy.com/media/qgQUggAC3Pfv687qPC/giphy.gif" />
+
+## 👨‍💻 About Me
+
+- 🚀 Full Stack Developer with strong backend fundamentals  
+- 🧠 Passionate about scalable system design & performance  
+- 🔍 Focused on building production-ready applications  
+- 🤖 Exploring AI integrations in modern web apps  
+- 📈 Always optimizing for clean code & maintainability  
+
+<br clear="right"/>
+
+---
+
+## 🛠 Tech Stack
 
 <p align="center">
   <img src="https://skillicons.dev/icons?i=ts,react,node,express,mongodb,java,python,docker,git,github,tailwind&perline=6" />
@@ -36,7 +50,7 @@
 
 <p align="center">
 <a href="YOUR_RESUME_LIVE_LINK">
-  <img src="https://img.shields.io/badge/Live-Demo-2F855A?style=for-the-badge&logo=vercel&logoColor=white" />
+  <img src="https://img.shields.io/badge/Live-Demo-00C896?style=for-the-badge&logo=vercel&logoColor=white" />
 </a>
 &nbsp;
 <a href="YOUR_RESUME_GITHUB_LINK">
@@ -44,7 +58,7 @@
 </a>
 </p>
 
-AI-powered resume analysis tool with intelligent scoring and feedback system.
+AI-powered resume analysis tool with intelligent scoring and structured feedback.
 
 ---
 
@@ -52,7 +66,7 @@ AI-powered resume analysis tool with intelligent scoring and feedback system.
 
 <p align="center">
 <a href="YOUR_EXPENSE_LIVE_LINK">
-  <img src="https://img.shields.io/badge/Live-Demo-2F855A?style=for-the-badge&logo=vercel&logoColor=white" />
+  <img src="https://img.shields.io/badge/Live-Demo-00C896?style=for-the-badge&logo=vercel&logoColor=white" />
 </a>
 &nbsp;
 <a href="YOUR_EXPENSE_GITHUB_LINK">
@@ -60,7 +74,7 @@ AI-powered resume analysis tool with intelligent scoring and feedback system.
 </a>
 </p>
 
-Track and analyze expenses with interactive dashboard and clean UI.
+Interactive expense tracking dashboard with analytics and clean UI.
 
 ---
 
@@ -81,7 +95,7 @@ Track and analyze expenses with interactive dashboard and clean UI.
 
 ---
 
-## 🌐 Connect
+## 🌐 Connect With Me
 
 <p align="center">
 <a href="https://www.linkedin.com/in/vishu-sharma-293a0432a/">
