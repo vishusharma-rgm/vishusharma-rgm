@@ -1,10 +1,9 @@
-<!-- ================= ULTRA CLEAN ENGINEER PROFILE ================= -->
+<!-- ================= CLEAN ENGINEER PROFILE ================= -->
 
-<p align="center">
-  <img src="https://raw.githubusercontent.com/vishusharma-rgm/vishusharma-rgm/main/assets/vs-monogram.svg" width="90"/>
-</p>
+<h1 align="center">
+  <img src="https://readme-typing-svg.herokuapp.com?font=SF+Pro+Display&size=34&duration=3000&pause=1000&color=2F855A&center=true&vCenter=true&width=600&lines=Vishu+Sharma" />
+</h1>
 
-<h2 align="center">Vishu Sharma</h2>
 <p align="center">Software Engineer</p>
 
 ---
@@ -12,7 +11,7 @@
 ## Engineering Focus
 
 Designing scalable backend systems and clean frontend architecture.  
-Building production-ready applications with clarity, performance, and maintainability.
+Building production-ready applications with clarity, performance, and long-term maintainability.
 
 ---
 
@@ -54,14 +53,6 @@ Building production-ready applications with clarity, performance, and maintainab
 <a href="YOUR_GITHUB_LINK">
   <img src="https://img.shields.io/badge/GitHub-Repository-111111?style=for-the-badge&logo=github&logoColor=white" />
 </a>
-</p>
-
----
-
-## GitHub Stats
-
-<p align="center">
-  <img height="150" src="https://github-readme-stats.vercel.app/api?username=vishusharma-rgm&show_icons=true&theme=transparent&hide_border=true" />
 </p>
 
 ---
