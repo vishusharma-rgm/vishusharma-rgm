@@ -89,6 +89,9 @@ Expense tracking system with analytics and scalable architecture.
   
   <img height="160" src="https://streak-stats.demolab.com?user=vishusharma-rgm&theme=transparent&hide_border=true" />
 </p>
+<p align="center">
+  <img src="https://github-profile-summary-cards.vercel.app/api/cards/repos-per-language?username=vishusharma-rgm&theme=github_dark" />
+</p>
 
 <!-- MY PROGRAMMING LANGUAGES WITH % -->
 <p align="center">
