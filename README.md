@@ -1,9 +1,9 @@
 <p align="center">
-  <img src="https://capsule-render.vercel.app/api?type=venom&color=0:0f0c29,50:302b63,100:24243e&height=220&section=header&text=Vishu%20Sharma&fontSize=64&fontColor=ffffff&animation=twinkling&fontAlignY=38&desc=Java%20Developer%20%7C%20Backend%20Developer%20%7C%20DSA&descAlignY=60&descSize=18" />
+  <img src="https://capsule-render.vercel.app/api?type=waving&color=0:0f0c29,50:302b63,100:24243e&height=230&section=header&text=Vishu%20Sharma&fontSize=62&fontColor=ffffff&animation=fadeIn&fontAlignY=36&desc=Java%20%7C%20Backend%20%7C%20Agentic%20AI&descAlignY=58&descSize=20" />
 </p>
 
 <p align="center">
-  <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=500&size=22&pause=1000&color=A78BFA&center=true&vCenter=true&width=650&lines=Java+%26+Backend+Developer;MERN+Stack+%7C+DSA+Problem+Solver;Building+Nova%2C+my+AI+voice+agent+%F0%9F%8E%99%EF%B8%8F;Turning+ideas+into+working+products+%F0%9F%9A%80" />
+  <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=500&size=22&pause=1000&color=A78BFA&center=true&vCenter=true&width=650&lines=Java+%26+Backend+Developer;MERN+Stack+%7C+DSA+Problem+Solver;Building+Nova%3A+my+24%2F7+AI+voice+agent+%F0%9F%8E%99%EF%B8%8F;Turning+ideas+into+working+products+%F0%9F%9A%80" />
 </p>
 
 <p align="center">
@@ -13,19 +13,26 @@
   <img src="https://komarev.com/ghpvc/?username=vishusharma-rgm&style=for-the-badge&color=7c3aed&label=PROFILE+VIEWS" />
 </p>
 
-<p align="center">
-  <img src="https://img.shields.io/github/followers/vishusharma-rgm?style=for-the-badge&logo=github&color=302b63&labelColor=0d1117" />
-  <img src="https://img.shields.io/github/stars/vishusharma-rgm?style=for-the-badge&logo=github&color=302b63&labelColor=0d1117" />
-</p>
+---
+
+## 👋 Hey, I'm Vishu
+
+I'm a **Java and backend developer** who learns by building real things. I like turning ideas into working products: APIs, full-stack apps, and AI agents that actually do tasks.
+
+- 🔭 **Now building:** Nova, a 24/7 voice-controlled personal AI agent
+- 🤖 **Interested in:** agentic AI systems, backend design, clean APIs
+- 🧠 **Practice:** DSA daily on LeetCode and Codeforces
+- 🌱 **Next:** open source contributions
 
 ---
 
-## 👨‍💻 About Me
+## 🎙️ Currently Building: Nova
 
-- ☕ Java & backend developer who loves building real, working products
-- 🧠 Regular on DSA: LeetCode and Codeforces
-- 🔭 Currently building **Nova**, a 24/7 voice-controlled personal AI agent
-- 🌱 Exploring agentic AI systems and open source contributions
+> A voice-controlled personal AI agent that runs 24/7 on my Mac and executes tasks through tools.
+
+`Node.js` `Claude API` `Voice Control` `Tool Calling`
+
+*Repo and demo coming soon.*
 
 ---
 
@@ -39,45 +46,21 @@
 
 ## 🚀 Featured Projects
 
-<table>
-  <tr>
-    <td width="50%">
-      <h3>🤖 Agentic Task Executor</h3>
-      <p>AI agent that plans and executes tasks autonomously.</p>
-      <a href="https://github.com/vishusharma-rgm/Agentic-Task-Executor">📂 Code</a>
-    </td>
-    <td width="50%">
-      <h3>⚙️ Task Forge</h3>
-      <p>Task and workflow management project.</p>
-      <a href="https://github.com/vishusharma-rgm/Task-Forge">📂 Code</a>
-    </td>
-  </tr>
-  <tr>
-    <td width="50%">
-      <h3>🔄 Review Sync</h3>
-      <p>Review and sync tool for smoother collaboration.</p>
-      <a href="https://github.com/vishusharma-rgm/Review-Sync">📂 Code</a>
-    </td>
-    <td width="50%">
-      <h3>📄 Resume Pilot</h3>
-      <p>Resume builder and analyzer.</p>
-      <a href="https://github.com/vishusharma-rgm/ResumePilot">📂 Code</a>
-    </td>
-  </tr>
-  <tr>
-    <td width="50%">
-      <h3>💸 Smart Expense Tracker</h3>
-      <p>Track and manage your daily expenses easily.</p>
-      <a href="https://github.com/vishusharma-rgm/Smart-Expense-Tracker">📂 Code</a> •
-      <a href="https://smart-expense-tracker-zeta-one.vercel.app">🌐 Live</a>
-    </td>
-    <td width="50%">
-      <h3>🎙️ Nova <sub>(in progress)</sub></h3>
-      <p>24/7 voice-controlled personal AI agent for Mac.</p>
-      <i>Coming soon</i>
-    </td>
-  </tr>
-</table>
+<p align="center">
+  <a href="https://github.com/vishusharma-rgm/Agentic-Task-Executor"><img width="48%" src="https://github-readme-stats.vercel.app/api/pin/?username=vishusharma-rgm&repo=Agentic-Task-Executor&theme=tokyonight&bg_color=0d1117&hide_border=true" /></a>
+  <a href="https://github.com/vishusharma-rgm/Task-Forge"><img width="48%" src="https://github-readme-stats.vercel.app/api/pin/?username=vishusharma-rgm&repo=Task-Forge&theme=tokyonight&bg_color=0d1117&hide_border=true" /></a>
+</p>
+<p align="center">
+  <a href="https://github.com/vishusharma-rgm/Review-Sync"><img width="48%" src="https://github-readme-stats.vercel.app/api/pin/?username=vishusharma-rgm&repo=Review-Sync&theme=tokyonight&bg_color=0d1117&hide_border=true" /></a>
+  <a href="https://github.com/vishusharma-rgm/ResumePilot"><img width="48%" src="https://github-readme-stats.vercel.app/api/pin/?username=vishusharma-rgm&repo=ResumePilot&theme=tokyonight&bg_color=0d1117&hide_border=true" /></a>
+</p>
+<p align="center">
+  <a href="https://github.com/vishusharma-rgm/Smart-Expense-Tracker"><img width="48%" src="https://github-readme-stats.vercel.app/api/pin/?username=vishusharma-rgm&repo=Smart-Expense-Tracker&theme=tokyonight&bg_color=0d1117&hide_border=true" /></a>
+</p>
+
+<p align="center">
+  <a href="https://smart-expense-tracker-zeta-one.vercel.app"><img src="https://img.shields.io/badge/🌐_Live_Demo-Smart_Expense_Tracker-7c3aed?style=for-the-badge&labelColor=0d1117" /></a>
+</p>
 
 ---
 
@@ -102,29 +85,21 @@
 
 ---
 
-## 🏆 Trophies
-
-<p align="center">
-  <img src="https://github-profile-trophy.vercel.app/?username=vishusharma-rgm&theme=tokyonight&no-frame=true&no-bg=true&margin-w=10&column=7" />
-</p>
-
----
-
-## 🐍 Contribution Graph
-
-<p align="center">
-  <img src="https://ghchart.rshah.org/7c3aed/vishusharma-rgm" width="90%" />
-</p>
+## 🐍 Contribution Snake
 
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/vishusharma-rgm/vishusharma-rgm/output/github-snake-dark.svg" />
     <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/vishusharma-rgm/vishusharma-rgm/output/github-snake.svg" />
-    <img alt="github contribution snake" src="https://raw.githubusercontent.com/vishusharma-rgm/vishusharma-rgm/output/github-snake-dark.svg" />
+    <img alt="Contribution snake" src="https://raw.githubusercontent.com/vishusharma-rgm/vishusharma-rgm/output/github-snake-dark.svg" />
   </picture>
 </p>
 
 ---
+
+## 🤝 Let's Connect
+
+I'm open to internships, collaborations and open source work. Reach me on [LinkedIn](https://www.linkedin.com/in/vishu-kush-293a0432a/).
 
 <p align="center">
   <i>"First make it work, then make it clean, then make it fast."</i> ⚡
