@@ -1,200 +1,81 @@
-#!/usr/bin/env python3
-"""
-Render data/contributions.json (produced by fetch_contributions.py) as a proper
-GitHub-style contribution heatmap SVG: a grid of rounded, colored BOXES in the
-classic 53-week x 7-day calendar, revealed once with a diagonal line-after-line
-slide-down (CSS keyframes, plays on load then freezes -- no looping "glow"), a
-Less->More legend, and a real stats footer.
+"""Render data/contributions.json as an animated 53x7 heatmap SVG."""
+import json, datetime as dt
+from pathlib import Path
 
-Run by .github/workflows/update-profile-art.yml after fetch_contributions.py.
-"""
-import datetime
-import json
-import os
+ROOT = Path(__file__).resolve().parent.parent
+DATA = json.loads((ROOT / "data" / "contributions.json").read_text())
 
-HERE = os.path.dirname(__file__)
-IN_PATH = os.path.join(HERE, "..", "data", "contributions.json")
-OUT_PATH = os.path.join(HERE, "..", "contrib-heatmap.svg")
-
-# GitHub-ish green ramp: empty -> brightest. Level 5 is a brighter neon top end.
 PALETTE = ["#161b22", "#0e4429", "#006d32", "#26a641", "#39d353", "#69f0a0"]
+BOX, GAP = 12, 3
+PITCH = BOX + GAP
+LEFT, TOP = 40, 56
+W = LEFT + 53 * PITCH + 20          # ~855
+H = TOP + 7 * PITCH + 62
 
-CELL = 12
-GAP = 3
-STEP = CELL + GAP
-PAD = 22
-LEFT_LABEL_W = 30
-TOP_LABEL_H = 20
-TITLEBAR_H = 30
-
-BG = "#0a0e14"
-BG2 = "#0d1420"
-FRAME = "#1f6feb"
-MUTED = "#7d8590"
-TEXT = "#e6edf3"
-ACCENT = "#22d3ee"
-GREEN = "#39d353"
-GOLD = "#f2cc60"
-
-# reveal timing (one-shot)
-COL_T = 0.018   # per-column delay contribution (left -> right sweep)
-ROW_T = 0.045   # per-row delay contribution (top -> bottom cascade)
-CELL_DUR = 0.42
+days = DATA["days"]
+mx = max((d["count"] for d in days), default=1) or 1
+first = dt.date.fromisoformat(days[0]["date"])
+first_dow = (first.weekday() + 1) % 7   # Sunday = 0
 
 
-def level_for(count):
-    if count == 0:
-        return 0
-    if count <= 5:
-        return 1
-    if count <= 15:
-        return 2
-    if count <= 30:
-        return 3
-    if count <= 50:
-        return 4
-    return 5
+def level(d):
+    if d["level"] >= 4 and d["count"] >= 0.6 * mx:
+        return 5
+    return min(d["level"], 4)
 
 
-def build_grid(days):
-    first = datetime.date.fromisoformat(days[0]["date"])
-    lead_pad = (first.weekday() + 1) % 7  # sunday=0
-    grid = []
-    col = [None] * lead_pad
-    for d in days:
-        date = datetime.date.fromisoformat(d["date"])
-        weekday = (date.weekday() + 1) % 7
-        while len(col) < weekday:
-            col.append(None)
-        col.append((d["date"], d["count"], level_for(d["count"])))
-        if len(col) == 7:
-            grid.append(col)
-            col = []
-    if col:
-        while len(col) < 7:
-            col.append(None)
-        grid.append(col)
-    return grid
+out = []
+a = out.append
+a(f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W} {H}" width="{W}" height="{H}">')
+a("""<style>
+text{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;fill:#8b949e;font-size:10px}
+.t{fill:#c9d1d9;font-size:12px}
+.g{fill:#39d353}
+.c{opacity:0;transform-box:fill-box;transform-origin:center;animation:in .5s ease-out forwards}
+@keyframes in{from{opacity:0;transform:translateY(-10px) scale(.6)}to{opacity:1;transform:none}}
+.f{opacity:0;animation:fd .8s ease-out forwards}
+@keyframes fd{to{opacity:1}}
+</style>""")
+a(f'<rect width="{W}" height="{H}" rx="10" fill="#0d1117" stroke="#30363d"/>')
+a('<circle cx="18" cy="18" r="5" fill="#ff5f56"/><circle cx="36" cy="18" r="5" fill="#ffbd2e"/><circle cx="54" cy="18" r="5" fill="#27c93f"/>')
+a(f'<text class="t" x="{W/2}" y="22" text-anchor="middle">vishu@github: ~/contributions</text>')
 
+# month labels (skip a label if it would crowd the previous one)
+last_m, last_week = None, -10
+for i, d in enumerate(days):
+    date = dt.date.fromisoformat(d["date"])
+    week = (i + first_dow) // 7
+    if date.month != last_m:
+        last_m = date.month
+        if week - last_week >= 3:
+            a(f'<text x="{LEFT + week*PITCH}" y="{TOP-8}">{date.strftime("%b")}</text>')
+            last_week = week
+# weekday labels
+for r, name in ((1, "Mon"), (3, "Wed"), (5, "Fri")):
+    a(f'<text x="8" y="{TOP + r*PITCH + 10}">{name}</text>')
 
-def render(data):
-    days = data["days"]
-    grid = build_grid(days)
-    n_cols = len(grid)
-    art_w = n_cols * STEP
-    art_h = 7 * STEP
+# cells
+for i, d in enumerate(days):
+    idx = i + first_dow
+    week, dow = divmod(idx, 7)
+    x, y = LEFT + week * PITCH, TOP + dow * PITCH
+    delay = (week + dow) * 0.018
+    a(f'<rect class="c" x="{x}" y="{y}" width="{BOX}" height="{BOX}" rx="3" '
+      f'fill="{PALETTE[level(d)]}" style="animation-delay:{delay:.2f}s">'
+      f'<title>{d["count"]} on {d["date"]}</title></rect>')
 
-    month_labels = []
-    seen_months = set()
-    for ci, column in enumerate(grid):
-        for cell in column:
-            if cell is None:
-                continue
-            date = datetime.date.fromisoformat(cell[0])
-            key = (date.year, date.month)
-            if key not in seen_months and date.day <= 7:
-                seen_months.add(key)
-                month_labels.append((ci, date.strftime("%b")))
-            break
-
-    canvas_w = PAD + LEFT_LABEL_W + art_w + PAD
-    stats_h = 88
-    canvas_h = TITLEBAR_H + TOP_LABEL_H + art_h + stats_h + PAD
-
-    css = f"""
-@keyframes cell {{
-  0%   {{ opacity: 0; transform: translateY(-6px); }}
-  100% {{ opacity: 1; transform: translateY(0); }}
-}}
-.c {{ opacity: 0; animation: cell {CELL_DUR:.2f}s cubic-bezier(.2,.8,.2,1) both; }}
-""".strip()
-
-    parts = [
-        f'<svg xmlns="http://www.w3.org/2000/svg" width="{canvas_w}" height="{canvas_h}" '
-        f'viewBox="0 0 {canvas_w} {canvas_h}" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">',
-        f'<style>{css}</style>',
-        '<defs>'
-        f'<linearGradient id="hbg" x1="0" y1="0" x2="0" y2="1">'
-        f'<stop offset="0" stop-color="{BG2}"/><stop offset="1" stop-color="{BG}"/></linearGradient>'
-        '</defs>',
-        f'<rect width="{canvas_w}" height="{canvas_h}" rx="12" fill="url(#hbg)"/>',
-        f'<rect x="0.5" y="0.5" width="{canvas_w-1}" height="{canvas_h-1}" rx="12" '
-        f'fill="none" stroke="{FRAME}" stroke-width="1" stroke-opacity="0.55"/>',
-        f'<line x1="0" y1="{TITLEBAR_H}" x2="{canvas_w}" y2="{TITLEBAR_H}" stroke="{FRAME}" stroke-opacity="0.35"/>',
-    ]
-    for i, dotcol in enumerate(["#ff5f56", "#ffbd2e", "#27c93f"]):
-        parts.append(f'<circle cx="{PAD + i*16}" cy="{TITLEBAR_H/2}" r="5" fill="{dotcol}"/>')
-    parts.append(f'<text x="{canvas_w/2}" y="{TITLEBAR_H/2 + 4}" fill="{MUTED}" font-size="12" '
-                 f'text-anchor="middle">vishu@github: ~/contributions --graph</text>')
-
-    grid_top = TITLEBAR_H + TOP_LABEL_H
-    grid_left = PAD + LEFT_LABEL_W
-
-    for ci, label in month_labels:
-        x = grid_left + ci * STEP
-        parts.append(f'<text x="{x}" y="{TITLEBAR_H + 14}" fill="{MUTED}" font-size="10">{label}</text>')
-
-    for wi, wname in [(1, "Mon"), (3, "Wed"), (5, "Fri")]:
-        y = grid_top + wi * STEP + CELL * 0.78
-        parts.append(f'<text x="{PAD}" y="{y:.1f}" fill="{MUTED}" font-size="9">{wname}</text>')
-
-    # the boxes -- each a rounded rect, diagonal slide-down reveal (once, freeze)
-    for ci, column in enumerate(grid):
-        gx = grid_left + ci * STEP
-        for ri, cell in enumerate(column):
-            if cell is None:
-                continue
-            date_s, count, lvl = cell
-            gy = grid_top + ri * STEP
-            delay = ci * COL_T + ri * ROW_T
-            plural = "s" if count != 1 else ""
-            parts.append(
-                f'<rect class="c" x="{gx}" y="{gy}" width="{CELL}" height="{CELL}" rx="2.5" '
-                f'fill="{PALETTE[lvl]}" style="animation-delay:{delay:.3f}s">'
-                f'<title>{date_s}: {count} contribution{plural}</title></rect>'
-            )
-
-    # legend: Less [][][][][] More (bottom-right of the grid)
-    leg_y = grid_top + art_h + 6
-    leg_x = canvas_w - PAD - (len(PALETTE) * (CELL - 1) + 70)
-    parts.append(f'<text x="{leg_x}" y="{leg_y + CELL*0.8:.1f}" fill="{MUTED}" font-size="10" text-anchor="end">Less</text>')
-    lx = leg_x + 8
-    for lvl, color in enumerate(PALETTE):
-        parts.append(f'<rect x="{lx}" y="{leg_y}" width="{CELL-1}" height="{CELL-1}" rx="2.2" fill="{color}"/>')
-        lx += CELL
-    parts.append(f'<text x="{lx + 4}" y="{leg_y + CELL*0.8:.1f}" fill="{MUTED}" font-size="10">More</text>')
-
-    sep_y = leg_y + CELL + 14
-    parts.append(f'<line x1="0" y1="{sep_y}" x2="{canvas_w}" y2="{sep_y}" stroke="{FRAME}" stroke-opacity="0.25"/>')
-
-    cs = data["current_streak"]["length"]
-    ls = data["longest_streak"]["length"]
-    total = data["total_contributions"]
-    best = data["best_day"]
-    rng = data["range"]
-
-    ly = sep_y + 24
-    # left column: big highlighted numbers; right column: context in muted
-    parts.append(f'<text x="{PAD}" y="{ly}" font-size="13" fill="{GREEN}">'
-                 f'<tspan font-weight="700">{total:,}</tspan>'
-                 f'<tspan fill="{MUTED}"> contributions in the last year</tspan></text>')
-    parts.append(f'<text x="{canvas_w - PAD}" y="{ly}" font-size="12" fill="{MUTED}" text-anchor="end">'
-                 f'{rng["start"]} &#8594; {rng["end"]}</text>')
-    ly += 24
-    parts.append(f'<text x="{PAD}" y="{ly}" font-size="13" fill="{MUTED}">current streak '
-                 f'<tspan fill="{ACCENT}" font-weight="700">{cs} days</tspan>'
-                 f'<tspan fill="{MUTED}">   &#183;   longest </tspan>'
-                 f'<tspan fill="{ACCENT}" font-weight="700">{ls} days</tspan></text>')
-    parts.append(f'<text x="{canvas_w - PAD}" y="{ly}" font-size="12" fill="{MUTED}" text-anchor="end">'
-                 f'best day <tspan fill="{GOLD}" font-weight="700">{best["count"]}</tspan> on {best["date"]}</text>')
-
-    parts.append("</svg>")
-    return "".join(parts)
-
-
-if __name__ == "__main__":
-    data = json.load(open(IN_PATH))
-    svg = render(data)
-    with open(OUT_PATH, "w") as f:
-        f.write(svg)
-    print(f"wrote {OUT_PATH} ({len(svg)} bytes)")
+# legend + footer
+fy = TOP + 7 * PITCH + 24
+a(f'<text class="f g" x="{LEFT}" y="{fy}" style="animation-delay:2.4s;font-size:12px">'
+  f'{DATA["total"]:,} contributions in the last year</text>')
+a(f'<text class="f" x="{LEFT}" y="{fy+20}" style="animation-delay:2.6s">'
+  f'current streak: {DATA["current_streak"]}d  |  longest streak: {DATA["longest_streak"]}d  |  '
+  f'best day: {DATA["best_day"]["count"]} ({DATA["best_day"]["date"]})</text>')
+lx = W - 20 - (6 * PITCH) - 60
+a(f'<text x="{lx-30}" y="{fy+8}">Less</text>')
+for k, c in enumerate(PALETTE):
+    a(f'<rect x="{lx+k*PITCH}" y="{fy-2}" width="{BOX}" height="{BOX}" rx="3" fill="{c}"/>')
+a(f'<text x="{lx+6*PITCH+4}" y="{fy+8}">More</text>')
+a("</svg>")
+(ROOT / "contrib-heatmap.svg").write_text("\n".join(out))
+print("wrote contrib-heatmap.svg", W, H)

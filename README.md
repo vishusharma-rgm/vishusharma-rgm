@@ -1,21 +1,22 @@
 <div align="center">
 
 <h3><code>vishu@github ~ $ ./contributions.sh</code></h3>
-
-<!-- Generated daily from the public GitHub contributions page. -->
-<img src="./contrib-heatmap.svg" width="860" alt="Vishu Sharma's GitHub contribution heatmap" />
+<img src="./contrib-heatmap.svg" alt="GitHub contribution heatmap" width="860" />
 
 <br><br>
 
 <h3><code>vishu@github ~ $ whoami</code></h3>
-
-<!-- ASCII portrait intentionally omitted for now. Add it after generating one from Vishu's own photo. -->
-<img src="./info-card.svg" width="720" alt="Vishu Sharma terminal profile card" />
+<table>
+  <tr>
+    <td valign="top"><img src="./portrait-pixel-v2.svg" alt="Clear pixel portrait" width="370" /></td>
+    <td valign="top"><img src="./profile-stats-v2.svg" alt="Contribution statistics" width="490" /></td>
+  </tr>
+</table>
 
 <br><br>
 
 <h3><code>vishu@github ~ $ ./links.sh</code></h3>
-<p><b>Fullstack Developer · AI Builder · SDE Aspirant</b></p>
+<strong>Fullstack Developer · AI Builder · SDE Aspirant</strong>
 
 <p>
   <a href="https://portfolio2026-alpha-sage.vercel.app"><img src="https://img.shields.io/badge/PORTFOLIO-portfolio2026--alpha--sage.vercel.app-0d1117?style=for-the-badge&logo=vercel&logoColor=white" alt="Portfolio" /></a>
