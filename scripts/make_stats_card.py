@@ -11,7 +11,7 @@ from pathlib import Path
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--input", default="data/contributions.json")
-    parser.add_argument("--output", default="profile-stats.svg")
+    parser.add_argument("--output", default="profile-stats-v2.svg")
     args = parser.parse_args()
     data = json.loads(Path(args.input).read_text(encoding="utf-8"))
     days = data.get("days", [])
