@@ -1,123 +1,176 @@
-"""Render the animated terminal-style contribution statistics card."""
+#!/usr/bin/env python3
+"""
+Render the streak / numbers card from data/contributions.json (written daily by
+fetch_contributions.py) as a terminal-window SVG beside the ASCII portrait.
 
-from __future__ import annotations
+The canvas is the same size as the portrait (840 x 880) so the two panels line
+up when the README shows them side by side at equal widths. Fonts are sized for
+that half-width display (~0.5x).
 
-import argparse
-import html
+Six stat tiles slide in and their numbers count up to the real value, then a
+monthly-contributions bar chart grows in underneath. The count-up is a stack of
+pre-rendered frames toggled with SMIL <set>, since GitHub runs SMIL/CSS inside
+<img> SVGs but never JS.
+
+    python scripts/make_stats_card.py [data.json] [output.svg]
+"""
+import datetime
 import json
-from pathlib import Path
+import os
+import sys
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+SRC = sys.argv[1] if len(sys.argv) > 1 else os.path.join(HERE, "..", "data", "contributions.json")
+OUT = sys.argv[2] if len(sys.argv) > 2 else os.path.join(HERE, "..", "profile-stats-animated.svg")
+
+BG = "#0d1117"
+BG2 = "#111722"
+TILE = "#161b22"
+FRAME = "#30363d"
+MUTED = "#7d8590"
+INK = "#e6edf3"
+GREEN = "#39d353"
+BAR = "#26a641"
+
+W, H = 840, 880                      # == avi-ascii.svg canvas
+PAD = 20
+TITLEBAR_H = 30
+COLS, ROWS = 2, 3
+GAP = 16
+TILE_W = (W - PAD * 2 - GAP * (COLS - 1)) / COLS
+TILE_H = 150
+TILES_TOP = TITLEBAR_H + PAD + 4
+CHART_TOP = TILES_TOP + ROWS * TILE_H + (ROWS - 1) * GAP + GAP
+
+# timing (seconds)
+TILE_STAGGER = 0.15
+SLIDE_DUR = 0.45
+COUNT_DUR = 1.2
+FRAMES = 16
+BAR_START = TILE_STAGGER * COLS * ROWS + 0.4
+BAR_STAGGER = 0.06
+BAR_DUR = 0.6
 
 
-def value(data: dict, key: str) -> int:
-    raw = data.get(key, 0)
-    return int(raw.get("length", 0) if isinstance(raw, dict) else raw)
+def short(d):
+    return datetime.date.fromisoformat(d).strftime("%b %-d")
 
 
-def format_metric(metric: int | float) -> str:
-    if isinstance(metric, float):
-        return f"{metric:,.1f}"
-    return f"{int(metric):,}"
+def span(s):
+    return f'{short(s["start"])} – {short(s["end"])}' if s["length"] and s.get("start") and s.get("end") else "—"
 
 
-def main() -> None:
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--input", default="data/contributions.json")
-    parser.add_argument("--output", default="profile-stats-animated.svg")
-    args = parser.parse_args()
+data = json.load(open(SRC))
 
-    data = json.loads(Path(args.input).read_text(encoding="utf-8"))
-    days = data.get("days", [])
-    total = int(data.get("total", data.get("total_contributions", 0)))
-    active = int(data.get("active_days", sum(int(d.get("count", 0)) > 0 for d in days)))
-    best = data.get("best_day") or {"count": 0, "date": "—"}
-    average = float(data.get("avg_per_active_day", round(total / active, 1) if active else 0))
-    months = data.get("months") or {}
-    if isinstance(months, list):
-        months = {item["month"]: item["total"] for item in months}
-    month_items = list(months.items())[-12:]
-    max_month = max([int(v) for _, v in month_items] or [1])
 
-    cards = [
-        ("$ current streak", value(data, "current_streak"), "days", "#39d353"),
-        ("$ longest streak", value(data, "longest_streak"), "days", "#f0f6fc"),
-        ("$ contributions", total, "last year", "#f0f6fc"),
-        ("$ active days", active, f"/ {len(days)}", "#79c0ff"),
-        ("$ best day", int(best.get("count", 0)), str(best.get("date", "—")), "#ffa657"),
-        ("$ avg / active day", average, "contributions", "#d2a8ff"),
-    ]
+def streak(raw):
+    return raw if isinstance(raw, dict) else {"length": int(raw), "start": None, "end": None}
 
-    card_parts = []
-    for index, (label, metric, note, color) in enumerate(cards):
-        col, row = index % 2, index // 2
-        x, y = 18 + col * 235, 42 + row * 62
-        delay = 0.22 + index * 0.12
-        count_start = delay + 0.32
-        frames = []
-        for frame in range(1, 17):
-            progress = frame / 16
-            shown = metric * (1 - (1 - progress) ** 3)
-            if isinstance(metric, float):
-                shown = round(shown, 1)
-            else:
-                shown = int(round(shown))
-            start = count_start + 1.1 * (frame - 1) / 16
-            end = count_start + 1.1 * frame / 16
-            events = f'<set attributeName="opacity" to="1" begin="{start:.3f}s"/>'
-            if frame < 16:
-                events += f'<set attributeName="opacity" to="0" begin="{end:.3f}s"/>'
-            frames.append(
-                f'<text x="{x + 12}" y="{y + 40}" opacity="0" class="value" style="fill:{color}">'
-                f'{html.escape(format_metric(shown))}{events}</text>'
-            )
-        card_parts.append(
-            f'<g class="metric" style="animation-delay:{delay:.2f}s">'
-            f'<rect x="{x}" y="{y}" width="223" height="52" rx="8" class="card"/>'
-            f'<text x="{x + 12}" y="{y + 16}" class="label">{html.escape(label)}</text>'
-            f'{"".join(frames)}'
-            f'<text x="{x + 105}" y="{y + 40}" class="note">{html.escape(str(note))}</text>'
-            '</g>'
+
+cur, lng, best = streak(data.get("current_streak", 0)), streak(data.get("longest_streak", 0)), data.get("best_day") or {"count": 0, "date": "—"}
+n_days = len(data.get("days", []))
+total = int(data.get("total_contributions", data.get("total", 0)))
+active_days = int(data.get("active_days", sum(int(d.get("count", 0)) > 0 for d in data.get("days", []))))
+average = float(data.get("avg_per_active_day", round(total / active_days, 1) if active_days else 0))
+monthly = data.get("monthly") or [{"month": month, "total": total} for month, total in (data.get("months") or {}).items()]
+
+# (label, value, suffix, caption, accent)
+tiles = [
+    ("current streak", cur["length"], " days", span(cur), GREEN),
+    ("longest streak", lng["length"], " days", span(lng), INK),
+    ("contributions", total, "", "in the last year", INK),
+    ("active days", active_days, f" / {n_days}", f'{active_days / n_days:.0%} of the year' if n_days else "0% of the year", INK),
+    ("best day", best["count"], "", short(best["date"]), INK),
+    ("avg / active day", average, "", "contributions", INK),
+]
+
+
+def fmt(v, like):
+    return f"{v:,.1f}" if isinstance(like, float) else f"{int(round(v)):,}"
+
+
+parts = [
+    f'<svg xmlns="http://www.w3.org/2000/svg" width="{W}" height="{H}" viewBox="0 0 {W} {H}" '
+    f'font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">',
+    '<style>'
+    f'.t{{opacity:0;animation:in {SLIDE_DUR}s ease-out both}}'
+    '@keyframes in{0%{opacity:0;transform:translateY(14px)}100%{opacity:1;transform:translateY(0)}}'
+    f'.b{{transform-box:fill-box;transform-origin:bottom;transform:scaleY(0);animation:grow {BAR_DUR}s ease-out both}}'
+    '@keyframes grow{to{transform:scaleY(1)}}'
+    '@media (prefers-reduced-motion: reduce){.t,.b{opacity:1!important;transform:none!important;animation:none!important}}'
+    '</style>',
+    f'<defs><linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">'
+    f'<stop offset="0" stop-color="{BG2}"/><stop offset="1" stop-color="{BG}"/></linearGradient></defs>',
+    f'<rect width="{W}" height="{H}" rx="12" fill="url(#bg)"/>',
+    f'<rect x="0.5" y="0.5" width="{W-1}" height="{H-1}" rx="12" fill="none" stroke="{FRAME}"/>',
+    f'<line x1="0" y1="{TITLEBAR_H}" x2="{W}" y2="{TITLEBAR_H}" stroke="{FRAME}"/>',
+]
+for i, dot in enumerate(["#ff5f56", "#ffbd2e", "#27c93f"]):
+    parts.append(f'<circle cx="{PAD + i*16}" cy="{TITLEBAR_H/2}" r="5" fill="{dot}"/>')
+parts.append(f'<text x="{W/2}" y="{TITLEBAR_H/2 + 4}" fill="{MUTED}" font-size="12" '
+             f'text-anchor="middle">vishu@github: ~$ ./stats.sh</text>')
+
+# ---- stat tiles ----------------------------------------------------------
+for i, (label, value, suffix, caption, accent) in enumerate(tiles):
+    col, row = i % COLS, i // COLS
+    x = PAD + col * (TILE_W + GAP)
+    y = TILES_TOP + row * (TILE_H + GAP)
+    start = i * TILE_STAGGER
+    count_start = start + SLIDE_DUR * 0.6
+
+    parts.append(f'<g class="t" style="animation-delay:{start:.2f}s">')
+    parts.append(f'<rect x="{x:.1f}" y="{y}" width="{TILE_W:.1f}" height="{TILE_H}" rx="10" '
+                 f'fill="{TILE}" stroke="{FRAME}"/>')
+    parts.append(f'<text x="{x+24:.1f}" y="{y+40}" fill="{MUTED}" font-size="22">$ {label}</text>')
+
+    # count-up frames: ease-out so it decelerates into the real number
+    num_y = y + 100
+    for k in range(1, FRAMES + 1):
+        p = k / FRAMES
+        v = value * (1 - (1 - p) ** 3)
+        t_on = count_start + COUNT_DUR * (k - 1) / FRAMES
+        t_off = count_start + COUNT_DUR * k / FRAMES
+        anim = f'<set attributeName="opacity" to="1" begin="{t_on:.3f}s"/>'
+        if k < FRAMES:
+            anim += f'<set attributeName="opacity" to="0" begin="{t_off:.3f}s"/>'
+        parts.append(
+            f'<text x="{x+24:.1f}" y="{num_y}" opacity="0" font-size="54" font-weight="700" fill="{accent}">'
+            f'{fmt(v, value)}<tspan font-size="24" font-weight="400" fill="{MUTED}">{suffix}</tspan>'
+            f'{anim}</text>'
         )
+    parts.append(f'<text x="{x+24:.1f}" y="{y+132}" fill="{MUTED}" font-size="20">{caption}</text>')
+    parts.append('</g>')
 
-    bar_parts = []
-    for index, (month, amount) in enumerate(month_items):
-        x = 25 + index * 36
-        height = max(8, round(int(amount) / max_month * 105))
-        y = 374 - height
-        delay = 0.82 + index * 0.07
-        bar_parts.append(
-            f'<g class="bar" style="animation-delay:{delay:.2f}s">'
-            f'<rect x="{x}" y="{y}" width="22" height="{height}" rx="4" fill="#39d353">'
-            f'<title>{html.escape(month)}: {int(amount)} contributions</title>'
-            f'<animate attributeName="y" from="374" to="{y}" dur="0.7s" fill="freeze" begin="{delay:.2f}s"/>'
-            f'<animate attributeName="height" from="0" to="{height}" dur="0.7s" fill="freeze" begin="{delay:.2f}s"/>'
-            f'<animate attributeName="opacity" from="0" to="1" dur="0.25s" fill="freeze" begin="{delay:.2f}s"/>'
-            '</rect>'
-            f'<text x="{x + 11}" y="394" text-anchor="middle" class="axis">{html.escape(month[5:])}</text>'
-            '</g>'
-        )
+# ---- monthly bars --------------------------------------------------------
+chart_x, chart_w = PAD, W - PAD * 2
+chart_h = H - PAD - CHART_TOP
+parts.append(f'<g class="t" style="animation-delay:{BAR_START - 0.3:.2f}s">')
+parts.append(f'<rect x="{chart_x}" y="{CHART_TOP}" width="{chart_w}" height="{chart_h}" rx="10" '
+             f'fill="{TILE}" stroke="{FRAME}"/>')
+parts.append(f'<text x="{chart_x+24}" y="{CHART_TOP+40}" fill="{MUTED}" font-size="22">$ contributions / month</text>')
+parts.append('</g>')
 
-    svg = f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 494 415" role="img" aria-label="Contribution statistics">
-<style>
-.bg{{fill:#0d1117;stroke:#30363d;stroke-width:2}}
-.card{{fill:#161b22;stroke:#30363d}}
-.label,.note,.axis{{fill:#8b949e;font:11px ui-monospace,SFMono-Regular,Menlo,monospace}}
-.value{{font:700 22px ui-monospace,SFMono-Regular,Menlo,monospace}}
-.title{{fill:#c9d1d9;font:700 13px ui-monospace,SFMono-Regular,Menlo,monospace}}
-@keyframes slideIn{{from{{opacity:0;transform:translateY(12px)}}to{{opacity:1;transform:translateY(0)}}}}
-@keyframes barIn{{from{{opacity:0;transform:translateY(18px)}}to{{opacity:1;transform:translateY(0)}}}}
-.metric{{opacity:0;animation:slideIn .55s cubic-bezier(.2,.8,.2,1) both}}
-.bar{{opacity:0;animation:barIn .55s cubic-bezier(.2,.8,.2,1) both}}
-.terminal{{opacity:0;animation:slideIn .45s ease-out .05s forwards}}
-</style>
-<rect class="bg" x="1" y="1" width="492" height="413" rx="12"/>
-<text x="18" y="24" class="title terminal">vishu@github ~ $ stats.sh</text>
-{''.join(card_parts)}
-<text x="18" y="236" class="title terminal" style="animation-delay:.72s">$ contributions / month</text>
-{''.join(bar_parts)}
-</svg>'''
-    Path(args.output).write_text(svg, encoding="utf-8")
-    print(f"wrote {args.output}")
+plot_top = CHART_TOP + 64
+plot_bot = CHART_TOP + chart_h - 40
+plot_l, plot_r = chart_x + 24, chart_x + chart_w - 24
+slot = (plot_r - plot_l) / len(monthly)
+bar_w = slot * 0.62
+peak = max(m["total"] for m in monthly) or 1
+for i, m in enumerate(monthly):
+    h = max(2, (plot_bot - plot_top) * m["total"] / peak)
+    bx = plot_l + i * slot + (slot - bar_w) / 2
+    fill = GREEN if m["total"] == peak else BAR
+    delay = BAR_START + i * BAR_STAGGER
+    parts.append(f'<rect class="b" x="{bx:.1f}" y="{plot_bot - h:.1f}" width="{bar_w:.1f}" height="{h:.1f}" '
+                 f'rx="3" fill="{fill}" style="animation-delay:{delay:.2f}s"/>')
+    mon = datetime.date.fromisoformat(m["month"] + "-01").strftime("%b")[0]
+    parts.append(f'<text x="{bx + bar_w/2:.1f}" y="{plot_bot + 28}" fill="{MUTED}" font-size="18" '
+                 f'text-anchor="middle">{mon}</text>')
+    if m["total"] == peak:
+        parts.append(f'<text class="t" style="animation-delay:{delay + BAR_DUR:.2f}s" x="{bx + bar_w/2:.1f}" '
+                     f'y="{plot_bot - h - 10:.1f}" fill="{INK}" font-size="18" text-anchor="middle">{peak:,}</text>')
 
-
-if __name__ == "__main__":
-    main()
+parts.append('</svg>')
+svg = "".join(parts)
+open(OUT, "w").write(svg)
+print(f"wrote {OUT}: {W} x {H}, {len(svg)//1024} KB")
