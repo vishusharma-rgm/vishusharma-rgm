@@ -1,0 +1,35 @@
+name: Update profile art
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "17 0 * * *"
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out profile repository
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+      - name: Fetch contributions
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python scripts/fetch_contributions.py --user vishusharma-rgm --output data/contributions.json
+      - name: Render profile art
+        run: |
+          python scripts/render_heatmap.py --input data/contributions.json --output contrib-heatmap.svg
+          python scripts/make_info_card.py --output info-card.svg
+      - name: Commit updated art
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/contributions.json contrib-heatmap.svg info-card.svg
+          git diff --cached --quiet || git commit -m "chore: update profile art"
+          git push

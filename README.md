@@ -14,6 +14,14 @@
   <img src="https://komarev.com/ghpvc/?username=vishusharma-rgm&style=for-the-badge&color=7c3aed&label=PROFILE+VIEWS" />
 </p>
 
+<p align="center">
+  <img src="./info-card.svg" alt="Vishu Sharma profile card" width="900" />
+</p>
+
+<p align="center">
+  <img src="./contrib-heatmap.svg" alt="GitHub contribution heatmap" width="900" />
+</p>
+
 ---
 
 ### 👨‍💻 About Me
