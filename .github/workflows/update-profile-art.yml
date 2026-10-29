@@ -22,8 +22,8 @@ jobs:
       - run: pip install requests==2.32.3 beautifulsoup4==4.12.3
       - run: python scripts/fetch_contributions.py
       - run: python scripts/render_heatmap_svg.py
-      - run: python scripts/make_stats_card.py --output profile-stats-v2.svg
+      - run: python scripts/make_stats_card.py --output profile-stats-animated.svg
       - uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "chore: refresh contribution graph [skip ci]"
-          file_pattern: "data/contributions.json contrib-heatmap.svg profile-stats-v2.svg"
+          file_pattern: "data/contributions.json contrib-heatmap.svg profile-stats-animated.svg"
