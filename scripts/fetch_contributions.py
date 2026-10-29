@@ -1,87 +1,68 @@
-"""Fetch a public GitHub contribution calendar for the profile README.
-
-The GitHub Actions token is used only for the GraphQL read. If the request
-cannot be made (for example, during local preview), an existing JSON file is
-kept so the renderer remains usable offline.
-"""
-
-from __future__ import annotations
-
-import argparse
-import json
-import os
-import urllib.error
-import urllib.request
-from datetime import date, timedelta
+"""Scrape the public contribution calendar (no token needed)."""
+import json, re, sys, datetime as dt
 from pathlib import Path
+import requests
+from bs4 import BeautifulSoup
+
+USER = "vishusharma-rgm"
+URL = f"https://github.com/users/{USER}/contributions"
+OUT = Path(__file__).resolve().parent.parent / "data" / "contributions.json"
 
 
-QUERY = """
-query($login: String!) {
-  user(login: $login) {
-    contributionsCollection {
-      contributionCalendar {
-        totalContributions
-        weeks {
-          contributionDays { date contributionCount contributionLevel }
-        }
-      }
-    }
-  }
-}
-"""
+def fetch():
+    r = requests.get(URL, headers={"User-Agent": "Mozilla/5.0"}, timeout=30)
+    r.raise_for_status()
+    soup = BeautifulSoup(r.text, "html.parser")
 
-LEVELS = {"NONE": 0, "FIRST_QUARTILE": 1, "SECOND_QUARTILE": 2, "THIRD_QUARTILE": 3, "FOURTH_QUARTILE": 4}
+    # tooltips hold the real count: "3 contributions on ..." / "No contributions on ..."
+    tips = {}
+    for t in soup.find_all("tool-tip"):
+        m = re.match(r"\s*(\d+|No)\s+contribution", t.get_text())
+        if m and t.get("for"):
+            tips[t["for"]] = 0 if m.group(1) == "No" else int(m.group(1))
 
-
-def fallback_days() -> list[dict[str, object]]:
-    today = date.today()
-    start = today - timedelta(days=364)
-    return [{"date": (start + timedelta(days=i)).isoformat(), "count": 0, "level": 0} for i in range(365)]
-
-
-def fetch(login: str, token: str) -> dict[str, object]:
-    request = urllib.request.Request(
-        "https://api.github.com/graphql",
-        data=json.dumps({"query": QUERY, "variables": {"login": login}}).encode(),
-        headers={"Authorization": f"bearer {token}", "Content-Type": "application/json", "User-Agent": "profile-art-workflow"},
-        method="POST",
-    )
-    with urllib.request.urlopen(request, timeout=20) as response:
-        payload = json.load(response)
-    if payload.get("errors") or not payload.get("data", {}).get("user"):
-        raise RuntimeError(json.dumps(payload.get("errors", payload)))
-    calendar = payload["data"]["user"]["contributionsCollection"]["contributionCalendar"]
-    days = [
-        {"date": item["date"], "count": int(item["contributionCount"]), "level": LEVELS.get(item["contributionLevel"], 0)}
-        for week in calendar["weeks"]
-        for item in week["contributionDays"]
-    ]
-    return {"username": login, "total": int(calendar["totalContributions"]), "days": days}
+    days = []
+    for td in soup.select("td.ContributionCalendar-day"):
+        if not td.get("data-date"):
+            continue
+        days.append({
+            "date": td["data-date"],
+            "level": int(td.get("data-level", 0)),
+            "count": tips.get(td.get("id"), 0),
+        })
+    days.sort(key=lambda d: d["date"])
+    total = sum(d["count"] for d in days)
+    return days, total
 
 
-def main() -> None:
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--user", default="vishusharma-rgm")
-    parser.add_argument("--output", default="data/contributions.json")
-    args = parser.parse_args()
-    output = Path(args.output)
-    output.parent.mkdir(parents=True, exist_ok=True)
-    try:
-        token = os.environ.get("GITHUB_TOKEN", "")
-        if not token:
-            raise RuntimeError("GITHUB_TOKEN is not available")
-        result = fetch(args.user, token)
-    except (OSError, urllib.error.URLError, RuntimeError, json.JSONDecodeError) as error:
-        if output.exists():
-            print(f"Contribution fetch skipped: {error}; keeping {output}")
-            return
-        print(f"Contribution fetch skipped: {error}; creating an empty preview")
-        days = fallback_days()
-        result = {"username": args.user, "total": 0, "days": days}
-    output.write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8")
-    print(f"Saved {result['total']} contributions to {output}")
+def stats(days):
+    today = dt.date.today().isoformat()
+    past = [d for d in days if d["date"] <= today]
+    longest = run = 0
+    for d in past:
+        run = run + 1 if d["count"] > 0 else 0
+        longest = max(longest, run)
+    cur = 0
+    for d in reversed(past):
+        if d["count"] > 0:
+            cur += 1
+        elif d["date"] == today:
+            continue  # today may not have commits yet
+        else:
+            break
+    best = max(days, key=lambda d: d["count"]) if days else None
+    months = {}
+    for d in days:
+        months[d["date"][:7]] = months.get(d["date"][:7], 0) + d["count"]
+    return {"current_streak": cur, "longest_streak": longest,
+            "best_day": best, "months": months}
 
 
 if __name__ == "__main__":
-    main()
+    days, total = fetch()
+    if not days:
+        sys.exit("no days parsed - GitHub HTML may have changed")
+    OUT.parent.mkdir(exist_ok=True)
+    OUT.write_text(json.dumps({"user": USER, "total": total, "days": days,
+                               **stats(days)}, indent=1))
+    print(f"{len(days)} days, {total} contributions -> {OUT}")

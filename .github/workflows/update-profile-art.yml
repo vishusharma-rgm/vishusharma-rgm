@@ -1,35 +1,28 @@
 name: Update profile art
 
-on:
-  workflow_dispatch:
+"on":
   schedule:
-    - cron: "17 0 * * *"
+    - cron: "17 6 * * *"   # ~11:47 IST daily
+  workflow_dispatch: {}
+  push:
+    branches: [main]
+    paths: ["scripts/**", ".github/workflows/**"]
 
 permissions:
   contents: write
 
 jobs:
-  update:
+  heatmap:
     runs-on: ubuntu-latest
     steps:
-      - name: Check out profile repository
-        uses: actions/checkout@v4
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
         with:
-          python-version: "3.x"
-      - name: Fetch contributions
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: python scripts/fetch_contributions.py --user vishusharma-rgm --output data/contributions.json
-      - name: Render profile art
-        run: |
-          python scripts/render_heatmap.py --input data/contributions.json --output contrib-heatmap.svg
-          python scripts/make_info_card.py --output info-card.svg
-      - name: Commit updated art
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/contributions.json contrib-heatmap.svg info-card.svg
-          git diff --cached --quiet || git commit -m "chore: update profile art"
-          git push
+          python-version: "3.11"
+      - run: pip install requests==2.32.3 beautifulsoup4==4.12.3
+      - run: python scripts/fetch_contributions.py
+      - run: python scripts/render_heatmap_svg.py
+      - uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore: refresh contribution graph [skip ci]"
+          file_pattern: "data/contributions.json contrib-heatmap.svg"

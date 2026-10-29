@@ -1,27 +1,22 @@
-"""Prepare a portrait for the optional ASCII SVG generator."""
-
-from __future__ import annotations
-
-import argparse
+"""Prep a photo for ASCII conversion: remove bg, boost contrast, white backdrop.
+Usage: python scripts/prep_photo.py my-photo.jpg   ->  source-prepped.png
+"""
+import sys
 from pathlib import Path
+import cv2, numpy as np
+from PIL import Image
+from rembg import remove
 
+src = Path(sys.argv[1])
+out = Path(__file__).resolve().parent.parent / "source-prepped.png"
 
-def main() -> None:
-    parser = argparse.ArgumentParser()
-    parser.add_argument("image")
-    parser.add_argument("--output", default="data/portrait.png")
-    args = parser.parse_args()
-    try:
-        from PIL import Image, ImageOps
-    except ImportError as error:
-        raise SystemExit("Install Pillow first: pip install -r scripts/requirements.txt") from error
-    image = Image.open(args.image).convert("L")
-    image = ImageOps.fit(image, (160, 160), method=Image.Resampling.LANCZOS)
-    output = Path(args.output)
-    output.parent.mkdir(parents=True, exist_ok=True)
-    image.save(output)
-    print(f"Saved prepared portrait to {output}")
-
-
-if __name__ == "__main__":
-    main()
+cut = remove(Image.open(src).convert("RGB")).convert("RGBA")      # 1. isolate subject
+bg = Image.new("RGBA", cut.size, (255, 255, 255, 255))
+flat = Image.alpha_composite(bg, cut).convert("L")                 # 3. onto pure white
+gray = np.array(flat)
+mask = np.array(cut)[:, :, 3] > 10
+clahe = cv2.createCLAHE(clipLimit=3.0, tileGridSize=(8, 8))        # 2. local contrast
+boosted = clahe.apply(gray)
+gray = np.where(mask, boosted, 255).astype("uint8")
+Image.fromarray(gray).save(out)
+print("saved", out)

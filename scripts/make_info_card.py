@@ -1,35 +1,48 @@
-"""Create the terminal-style profile information card."""
-
-from __future__ import annotations
-
-import argparse
-import html
+"""neofetch-style info card SVG. Edit ROWS to change content."""
+import os
 from pathlib import Path
+from xml.sax.saxutils import escape
 
+ROOT = Path(__file__).resolve().parent.parent
+STATIC = os.environ.get("STATIC") == "1"
 
-# Edit this list when the profile changes.
 ROWS = [
-    ("role", "Java & Backend Developer"),
-    ("stack", "Java · Spring · Node · React · MongoDB"),
-    ("building", "PrePora · Nova · Agentic tools"),
-    ("practice", "LeetCode · Codeforces · DSA"),
+    ("", "vishu@github", None),
+    ("", "-" * 30, None),
+    ("Role", "Java / Backend Developer", "#79c0ff"),
+    ("Edu", "B.Tech CSE, BBDITM Lucknow (2024-28)", "#79c0ff"),
+    ("Stack", "Java, MERN, JavaScript, DSA", "#d2a8ff"),
+    ("Now", "DSA Visualizer IDE, ClientFlow, Nova", "#7ee787"),
+    ("Built", "Task-Forge, Review-Sync, ResumePilot,", "#ffa657"),
+    ("", "Smart-Expense-Tracker, Agentic-Task-Executor", "#ffa657"),
+    ("DSA", "LeetCode: vishu___00 | CF: vishu__00", "#ff7b72"),
+    ("Goal", "SDE internships, open source, GSoC", "#7ee787"),
 ]
+W, LH, TOP = 490, 24, 56
+H = TOP + len(ROWS) * LH + 24
 
-
-def main() -> None:
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--output", default="info-card.svg")
-    args = parser.parse_args()
-    lines = []
-    for index, (label, value) in enumerate(ROWS):
-        y = 92 + index * 34
-        lines.append(f'<text x="38" y="{y}" class="label">{html.escape(label.upper())}</text><text x="155" y="{y}" class="value">{html.escape(value)}</text>')
-    svg = f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 260" role="img" aria-label="Vishu Sharma profile information">
-<style>.bg{{fill:#0d1117;stroke:#30363d;stroke-width:2}}.bar{{fill:#161b22}}.title{{fill:#f0f6fc;font:700 24px ui-monospace,SFMono-Regular,Menlo,monospace}}.label{{fill:#7ee787;font:700 12px ui-monospace,SFMono-Regular,Menlo,monospace}}.value{{fill:#c9d1d9;font:14px ui-monospace,SFMono-Regular,Menlo,monospace}}</style>
-<rect class="bg" x="1" y="1" width="898" height="258" rx="16"/><rect class="bar" x="1" y="1" width="898" height="43" rx="16"/><circle cx="28" cy="22" r="7" fill="#ff7b72"/><circle cx="50" cy="22" r="7" fill="#d29922"/><circle cx="72" cy="22" r="7" fill="#7ee787"/><text x="38" y="76" class="title">vishu@github:~$ whoami</text>{''.join(lines)}</svg>'''
-    Path(args.output).write_text(svg, encoding="utf-8")
-    print(f"Rendered {args.output}")
-
-
-if __name__ == "__main__":
-    main()
+o = [f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W} {H}" width="{W}" height="{H}">']
+o.append(f"""<style>
+text{{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13px;fill:#c9d1d9}}
+.k{{font-weight:bold}}
+.r{{{'' if STATIC else 'opacity:0;'}animation:in .6s ease-out forwards}}
+@keyframes in{{from{{opacity:0;transform:translateX(-12px)}}to{{opacity:1;transform:none}}}}
+</style>""")
+o.append(f'<rect width="{W}" height="{H}" rx="10" fill="#0d1117" stroke="#30363d"/>')
+o.append('<circle cx="18" cy="18" r="5" fill="#ff5f56"/><circle cx="36" cy="18" r="5" fill="#ffbd2e"/><circle cx="54" cy="18" r="5" fill="#27c93f"/>')
+o.append(f'<text x="{W/2}" y="22" text-anchor="middle" style="fill:#8b949e;font-size:12px">neofetch</text>')
+for i, (k, v, c) in enumerate(ROWS):
+    y = TOP + i * LH
+    d = 0.35 * i + 0.3
+    if not k and c is None:
+        first = i == 0
+        o.append(f'<g class="r" style="animation-delay:{d:.2f}s"><text x="22" y="{y}" '
+                 f'style="fill:{"#39d353" if first else "#484f58"};font-weight:bold">{escape(v)}</text></g>')
+    else:
+        key = f'<tspan class="k" style="fill:{c}">{escape(k + ": " if k else "")}</tspan>'
+        pad = "" if k else " " * 7
+        o.append(f'<g class="r" style="animation-delay:{d:.2f}s"><text x="22" y="{y}" xml:space="preserve">'
+                 f'{key}{pad}{escape(v)}</text></g>')
+o.append("</svg>")
+(ROOT / "info-card.svg").write_text("\n".join(o))
+print("wrote info-card.svg")
