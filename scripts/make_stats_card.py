@@ -13,6 +13,12 @@ def value(data: dict, key: str) -> int:
     return int(raw.get("length", 0) if isinstance(raw, dict) else raw)
 
 
+def format_metric(metric: int | float) -> str:
+    if isinstance(metric, float):
+        return f"{metric:,.1f}"
+    return f"{int(metric):,}"
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--input", default="data/contributions.json")
@@ -34,10 +40,10 @@ def main() -> None:
     cards = [
         ("$ current streak", value(data, "current_streak"), "days", "#39d353"),
         ("$ longest streak", value(data, "longest_streak"), "days", "#f0f6fc"),
-        ("$ contributions", f"{total:,}", "last year", "#f0f6fc"),
+        ("$ contributions", total, "last year", "#f0f6fc"),
         ("$ active days", active, f"/ {len(days)}", "#79c0ff"),
         ("$ best day", int(best.get("count", 0)), str(best.get("date", "—")), "#ffa657"),
-        ("$ avg / active day", f"{average:g}", "contributions", "#d2a8ff"),
+        ("$ avg / active day", average, "contributions", "#d2a8ff"),
     ]
 
     card_parts = []
@@ -45,11 +51,29 @@ def main() -> None:
         col, row = index % 2, index // 2
         x, y = 18 + col * 235, 42 + row * 62
         delay = 0.22 + index * 0.12
+        count_start = delay + 0.32
+        frames = []
+        for frame in range(1, 17):
+            progress = frame / 16
+            shown = metric * (1 - (1 - progress) ** 3)
+            if isinstance(metric, float):
+                shown = round(shown, 1)
+            else:
+                shown = int(round(shown))
+            start = count_start + 1.1 * (frame - 1) / 16
+            end = count_start + 1.1 * frame / 16
+            events = f'<set attributeName="opacity" to="1" begin="{start:.3f}s"/>'
+            if frame < 16:
+                events += f'<set attributeName="opacity" to="0" begin="{end:.3f}s"/>'
+            frames.append(
+                f'<text x="{x + 12}" y="{y + 40}" opacity="0" class="value" style="fill:{color}">'
+                f'{html.escape(format_metric(shown))}{events}</text>'
+            )
         card_parts.append(
             f'<g class="metric" style="animation-delay:{delay:.2f}s">'
             f'<rect x="{x}" y="{y}" width="223" height="52" rx="8" class="card"/>'
             f'<text x="{x + 12}" y="{y + 16}" class="label">{html.escape(label)}</text>'
-            f'<text x="{x + 12}" y="{y + 40}" class="value" style="fill:{color}">{html.escape(str(metric))}</text>'
+            f'{"".join(frames)}'
             f'<text x="{x + 105}" y="{y + 40}" class="note">{html.escape(str(note))}</text>'
             '</g>'
         )
