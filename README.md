@@ -11,7 +11,6 @@
     <!-- Add the optional portrait here after running the local portrait scripts:
     <td valign="top"><img src="./portrait-ascii.svg" width="370" /></td>
     -->
-    <td valign="top"><img src="./info-card.svg" alt="Vishu Sharma terminal profile" width="490" /></td>
     <td valign="top"><img src="./profile-stats.svg" alt="Contribution statistics" width="490" /></td>
   </tr>
 </table>
