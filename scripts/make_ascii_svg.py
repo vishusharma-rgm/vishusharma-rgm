@@ -30,15 +30,15 @@ ART_W_TARGET = 800
 CELL_W = ART_W_TARGET / COLS
 CELL_H = CELL_W * 15 / 8
 ROWS = round(COLS * 8 / 15)
-RAMP = " .`:-=+*cs#%@"  # bright(sparse) -> dark(dense); leading space clears bg
+RAMP = " .:-=+*#%@"  # fewer tones keep the portrait crisp at README size
 
 # the prepped image already has bg removed + CLAHE local contrast, so only
 # light global tuning is needed here.
 CONTRAST = 1.05
 BRIGHTNESS = 1.0
-GAMMA = 1.18          # >1 brightens mids -> face lands in sparser chars
+GAMMA = 1.22          # >1 brightens mids -> face lands in sparser chars
 SHARPEN = False
-WHITE_FLOOR = 0.80    # luminance above this is forced to blank (space)
+WHITE_FLOOR = 0.86    # luminance above this is forced to blank (space)
 
 PAD = 20
 TITLEBAR_H = 30
